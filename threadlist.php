@@ -8,7 +8,8 @@ $catid = $_GET['catid'];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $thread_title = $_POST["title"];
     $thread_desc = $_POST["desc"];
-    $insertSql = "INSERT INTO `threads` ( `thread_title`, `thread_desc`, `cat_id`, `user_id`, `thread_date`) VALUES ( '$thread_title', '$thread_desc', '$catid', '0', current_timestamp())";
+    $sno=$_POST["sno"];
+    $insertSql = "INSERT INTO `threads` ( `thread_title`, `thread_desc`, `cat_id`, `user_id`, `thread_date`) VALUES ( '$thread_title', '$thread_desc', '$catid', '$sno', current_timestamp())";
     $resultInsert = mysqli_query($conn, $insertSql);
     // echo $result;
     // $insert = true;
@@ -41,7 +42,7 @@ $result = mysqli_query($conn, $sql);
 
     if ($resultInsert) {
         echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>Success!</strong> Your question is now public in the thread. Keep patience, someone will answer you soon.
+        <strong>Success!</strong> Your thred is now public. Keep patience, someone will start discussion soon.
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -60,7 +61,6 @@ $result = mysqli_query($conn, $sql);
             <b>Some guidelines you must have to follow : </b>
             <ul class="mt-2">
                 <li>No Spam / Advertising / Self-promote in the forums. ...</li> 
-                <li>Do not post copyright-infringing material. ...</li>
                 <li>Do not post “offensive” posts, links or images. ...</li>
                 <li>Do not cross post questions. ...</li>
                 <li>Do not PM users asking for help. ...</li>
@@ -86,13 +86,19 @@ $result = mysqli_query($conn, $sql);
     $num = mysqli_num_rows($result);
     if ($num) {
         while ($thread = mysqli_fetch_assoc($result)) {
-
+            $thread_user_id=$thread['user_id'];
             $id = $thread['thread_id'];
+
+            $userSql="SELECT * FROM `users` where `user_id`='$thread_user_id'";
+            $userResult=mysqli_query($conn,$userSql);
+            $userArr=mysqli_fetch_assoc($userResult);
+
             echo '<div class="media mt-3">
             <img src="/forum/assets/img/userlogo.png" width="40px" class="mr-3" alt="...">
                 <div class="media-body">
-                <h5 class="mt-0">user1939</h5>
-                <b><a href="../thread.php/?threadid=' . $id . '" class="text-dark">' . $thread['thread_title'] . '</a></b>
+                <h5 class="mt-0 d-inline">'.$userArr['username'].'</h5><span class="font-italic"> posted at '.$thread['thread_date'].'</span><br>
+                <b><a href="/forum/thread.php/?threadid=' . $id . '" class="text-dark">' . $thread['thread_title'] . '</a></b>
+                
                 <p>' . $thread['thread_desc'] . '</p>
                 </div>
             </div>';
@@ -118,6 +124,7 @@ $result = mysqli_query($conn, $sql);
                     <label for="title">Thread title</label>
                     <input type="text" class="form-control" id="title" name="title" placeholder="e.g. Can I use VS code for all languages?" maxlength="200" required>
                 </div>
+                <input type="hidden" name="sno" value="'.$_SESSION['sno'].'">
                 <div class="form-group">
                     <label for="desc">Elaborate your concern</label>
                     <textarea class="form-control" id="desc" name="desc" rows="3" placeholder="elaborate as clearly as possible" required></textarea>

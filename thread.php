@@ -10,7 +10,8 @@ $result = mysqli_query($conn, $sql);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // $user
     $comment_desc = $_POST["comment"];
-    $sqlInsert = "INSERT INTO `comments` (`comment_user`, `comment_desc`, `thread_id`, `comment_time`) VALUES ('user1934', '$comment_desc', '$threadid', current_timestamp())";
+    $sno=$_POST["sno"];
+    $sqlInsert = "INSERT INTO `comments` (`comment_by`, `comment_desc`, `thread_id`, `comment_time`) VALUES ('$sno', '$comment_desc', '$threadid', current_timestamp())";
     $commentInsert = mysqli_query($conn, $sqlInsert);
 }
 ?>
@@ -47,8 +48,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container">
         <?php
 
-        while ($a = mysqli_fetch_assoc($result)) {
-            echo '<div class="jumbotron">
+        $a = mysqli_fetch_assoc($result);
+        $thread_user_id = $a['user_id'];
+        $userSql = "SELECT * FROM `users` where `user_id`='$thread_user_id'";
+        $userResult = mysqli_query($conn, $userSql);
+        $userArr = mysqli_fetch_assoc($userResult);
+        echo '<div class="jumbotron">
             <h2>' . $a['thread_title'] . '</h2>
             <p class="text-dark">' . $a['thread_desc'] . '
             </p>
@@ -56,24 +61,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <b>Some guidelines you must have to follow before joining the discussion: </b>
             <ul class="mt-2">
                 <li >No Spam / Advertising / Self-promote in the forums. ...</li>
-                <li>Do not post copyright-infringing material. ...</li>
                 <li>Do not post “offensive” posts, links or images. ...</li>
                 <li>Do not cross post questions. ...</li>
                 <li>Do not PM users asking for help. ...</li>
                 <li>Remain respectful of other members at all times.</li>
             </ul>
 
-            <p class="btn btn-success btn-lg">Posted by <i>' . $a['user_id'] . '</i></p>
+            <p class="btn btn-success btn-lg">Posted by <i>' . $userArr['username'] . '</i></p>
         </div>';
-        }
         ?>
-
+        
         <?php
         if (isset($_SESSION["login"]) &&  $_SESSION["login"] == true) {
             echo '<div>
-            <form action="'.$_SERVER["REQUEST_URI"].'" method="POST">
+            <form action="' . $_SERVER["REQUEST_URI"] . '" method="POST">
             <div class="form-group">
             <label for="comment">Type your comment</label>
+            <input type="hidden" name="sno" value="'.$_SESSION['sno'].'">
             <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
             <small id="emailHelp" class="form-text text-muted">make sure you follow the rules and regulations of the forum <span class="text-danger">*</span></small>
         </div>
@@ -85,17 +89,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         ?>
         <h2 class="my-3">Discussions</h2>
-        
+
 
         <?php
         $noDiscuss = true;
         $sql = "SELECT * FROM `comments` where `thread_id`=$threadid";
         $result = mysqli_query($conn, $sql);
         while ($comment = mysqli_fetch_assoc($result)) {
+            $comment_user_id = $comment['comment_by'];
+
+            $userSql = "SELECT * FROM `users` where `user_id`='$comment_user_id'";
+            $userResult = mysqli_query($conn, $userSql);
+            $userArr = mysqli_fetch_assoc($userResult);
+
             echo '<div class="media mt-3">
                 <img src="/forum/assets/img/userlogo.png" width="40px" class="mr-3" alt="...">
                     <div class="media-body">
-                    <h5 class="mt-0 d-inline">' . $comment["comment_user"] . '</h5><span class="font-weight-bold font-italic"> commented at ' . $comment["comment_time"] . '</span>
+                    <h5 class="mt-0 d-inline">' . $userArr['username'] . '</h5><span class="font-weight-bold font-italic"> commented at ' . $comment["comment_time"] . '</span>
                     <p>' . $comment['comment_desc'] . '</p>
                     </div>
                 </div>';
@@ -105,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo ' <hr>
                     <div class="text-center">
                     <h4>No discussion started right now</h4>
-                    <p>Be the first one to start the thread.</p>
+                    <p>Be the first one to start.</p>
                     </div>
                  ';
         }

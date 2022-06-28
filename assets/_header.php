@@ -51,8 +51,8 @@ echo '<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 if (isset($_SESSION["login"]) &&  $_SESSION["login"] == true) {
 
   echo '<div class="row">
-      <img src="/forum/assets/img/userlogo.png" class="mx-2" width="43px" alt="' . $_SESSION["username"] . '"><span class="text-light m-auto">' . $_SESSION["username"] . '</span>
-        <a href="/forum/assets/_logout.php" class="text-light"><img src="/forum/assets/img/logout.png" class="mx-2" width="35px" alt="logout" title="logout"></a>
+      <img src="/forum/assets/img/userlogo.png" class="mx-2" width="50px" alt="' . $_SESSION["username"] . '"><span class="text-light m-auto">' . $_SESSION["username"] . '</span>
+        <a href="/forum/assets/_logout.php" class="text-light mx-3"><img src="/forum/assets/img/logout.png"  width="45px" alt="logout" title="logout"></a>
     </div>';
 }
 

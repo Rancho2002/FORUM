@@ -16,10 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // echo $a['password'];
             // $hash=password_verify($pass, $a["password"]);
             // echo var_dump($hash);.//!Important lesson: Always set password field as 255 in phpmyadmin:)
+
+            $sno=$a['user_id'];
             if ($pass == password_verify($pass, $a['password'])) {
                 session_start();
                 $login = "true";
                 $_SESSION["username"]=$user;
+                $_SESSION['sno']=$sno;
                 $_SESSION["login"]=true;
             }
             else {
