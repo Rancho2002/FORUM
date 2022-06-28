@@ -113,7 +113,7 @@ $result = mysqli_query($conn, $sql);
     <?php
     if (isset($_SESSION["login"]) &&  $_SESSION["login"] == true) {
         echo '<div>
-            <form action="echo $_SERVER["REQUEST_URI"]" method="POST">
+            <form action="'.$_SERVER["REQUEST_URI"].'" method="POST">
                 <div class="form-group">
                     <label for="title">Thread title</label>
                     <input type="text" class="form-control" id="title" name="title" placeholder="e.g. Can I use VS code for all languages?" maxlength="200" required>

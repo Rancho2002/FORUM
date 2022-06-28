@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php
         if (isset($_SESSION["login"]) &&  $_SESSION["login"] == true) {
             echo '<div>
-            <form action="echo $_SERVER["REQUEST_URI"]" method="POST">
+            <form action="'.$_SERVER["REQUEST_URI"].'" method="POST">
             <div class="form-group">
             <label for="comment">Type your comment</label>
             <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
